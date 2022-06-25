@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{7DD5BC12-0480-FFD8-A411-3A6F0FABD314}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClientNetworkTransform", "ClientNetworkTransform.csproj", "{646ED535-6709-AEC9-DE49-74ADDA1C9AD0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{35CFE115-5730-3203-129C-F06608D47B4A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7DD5BC12-0480-FFD8-A411-3A6F0FABD314}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DD5BC12-0480-FFD8-A411-3A6F0FABD314}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DD5BC12-0480-FFD8-A411-3A6F0FABD314}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DD5BC12-0480-FFD8-A411-3A6F0FABD314}.Release|Any CPU.Build.0 = Release|Any CPU
+		{646ED535-6709-AEC9-DE49-74ADDA1C9AD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{646ED535-6709-AEC9-DE49-74ADDA1C9AD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{646ED535-6709-AEC9-DE49-74ADDA1C9AD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{646ED535-6709-AEC9-DE49-74ADDA1C9AD0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{35CFE115-5730-3203-129C-F06608D47B4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{35CFE115-5730-3203-129C-F06608D47B4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{35CFE115-5730-3203-129C-F06608D47B4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{35CFE115-5730-3203-129C-F06608D47B4A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
