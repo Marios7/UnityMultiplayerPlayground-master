@@ -64,6 +64,7 @@
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualButton.cs" />
     <Compile Include="Assets\StarterAssets\InputSystem\StarterAssetsInputs.cs" />
     <Compile Include="Assets\Scripts\SpawnerControl.cs" />
+    <Compile Include="Assets\Scripts\RESTClient.cs" />
     <Compile Include="Assets\Scripts\Shared\RelayHostData.cs" />
     <Compile Include="Assets\Scripts\PlayerBallControl.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\CanvasInputs\UICanvasControllerInput.cs" />

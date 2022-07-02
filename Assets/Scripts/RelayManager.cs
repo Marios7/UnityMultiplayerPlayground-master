@@ -1,4 +1,4 @@
-using DilmerGames.Core.Singletons;
+  using DilmerGames.Core.Singletons;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using Unity.Services.Authentication;
@@ -11,12 +11,14 @@ using UnityEngine;
 public class RelayManager : Singleton<RelayManager>
 {
     [SerializeField]
-    private string environment = "production";
+    private string environment = "production";//Correspondes to the enviroment name in unity dashboard
+
 
     [SerializeField]
-    private int maxNumberOfConnections = 10;
+    private int maxNumberOfConnections = 10;//unity allows just 10 (beta )
 
-    public bool IsRelayEnabled => Transport != null && Transport.Protocol == UnityTransport.ProtocolType.RelayUnityTransport;
+    public bool IsRelayEnabled => 
+        Transport != null && Transport.Protocol == UnityTransport.ProtocolType.RelayUnityTransport;
 
     public UnityTransport Transport => NetworkManager.Singleton.gameObject.GetComponent<UnityTransport>();
 
@@ -26,7 +28,7 @@ public class RelayManager : Singleton<RelayManager>
 
         InitializationOptions options = new InitializationOptions()
             .SetEnvironmentName(environment);
-
+         
         await UnityServices.InitializeAsync(options);
 
         if (!AuthenticationService.Instance.IsSignedIn)
@@ -65,7 +67,7 @@ public class RelayManager : Singleton<RelayManager>
 
         await UnityServices.InitializeAsync(options);
 
-        if (!AuthenticationService.Instance.IsSignedIn)
+        if (!AuthenticationService.Instance.IsSignedIn)//check if the user is sign in 
         {
             await AuthenticationService.Instance.SignInAnonymouslyAsync();
         }
