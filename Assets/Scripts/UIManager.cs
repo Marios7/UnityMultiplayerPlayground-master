@@ -1,4 +1,5 @@
 using DilmerGames.Core.Singletons;
+using System;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
@@ -8,6 +9,9 @@ public class UIManager : Singleton<UIManager>
 {
     [SerializeField]
     private Button startServerButton;
+    
+    [SerializeField]
+    private Button CallRestButton;
 
     [SerializeField]
     private Button startHostButton;
@@ -42,6 +46,21 @@ public class UIManager : Singleton<UIManager>
 
     void Start()
     {
+        CallRestButton?.onClick.AddListener(() =>
+        {
+            Logger.Instance.LogInfo("Call RestFulService..");
+            try
+            {
+                var s = RestClient.sendRequest();
+                Logger.Instance.LogInfo($"RestFulService says: {s}");
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.LogInfo($"Exception: {ex.Message}");
+            }
+        });
+
         //Network Manager is from .NetCode
         // START SERVER
         startServerButton?.onClick.AddListener(() =>
@@ -78,6 +97,8 @@ public class UIManager : Singleton<UIManager>
             else
                 Logger.Instance.LogInfo("Unable to start client...");
         });
+
+        
 
         // STATUS TYPE CALLBACKS
         NetworkManager.Singleton.OnClientConnectedCallback += (id) =>

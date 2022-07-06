@@ -11,7 +11,7 @@ public class PlayerControl : NetworkBehaviour
     private float runSpeedOffset = 2.0f;
 
     [SerializeField]
-    private float rotationSpeed = 3.5f;
+    private float rotationSpeed = 2.8f;
 
 
     [SerializeField]
@@ -62,13 +62,14 @@ public class PlayerControl : NetworkBehaviour
 
     void Update()
     {
+        //sadaysuh
         if (IsClient && IsOwner) //If we do not add the (IsOwner) check, we could controll other players and it would make no sense
         {
             ClientInput();
         }
-
         ClientMoveAndRotate();
         ClientVisuals();
+        //RestClient.sendRequest();
     }
 
     private void ClientMoveAndRotate()
