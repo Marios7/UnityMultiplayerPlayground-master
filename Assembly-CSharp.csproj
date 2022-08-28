@@ -47,7 +47,7 @@
   <PropertyGroup>
     <ProjectTypeGuids>{E097FAD1-6243-4DAD-9C02-E9B9EFC3FFC1};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <UnityProjectGenerator>Package</UnityProjectGenerator>
-    <UnityProjectGeneratorVersion>2.0.15</UnityProjectGeneratorVersion>
+    <UnityProjectGeneratorVersion>2.0.16</UnityProjectGeneratorVersion>
     <UnityProjectType>Game:1</UnityProjectType>
     <UnityBuildTarget>StandaloneWindows64:19</UnityBuildTarget>
     <UnityVersion>2021.3.3f1</UnityVersion>
@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\PlayerCameraFollow.cs" />
     <Compile Include="Assets\Scripts\RelayManager.cs" />
+    <Compile Include="Assets\TVManager.cs" />
     <Compile Include="Assets\Scripts\Core\Logger.cs" />
     <Compile Include="Assets\Scripts\Shared\NetworkString.cs" />
     <Compile Include="Assets\Scripts\Core\NetworkSingleton.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Assets\Scripts\PlayerBallControl.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\CanvasInputs\UICanvasControllerInput.cs" />
     <Compile Include="Assets\Scripts\PlayerControl.cs" />
+    <Compile Include="Assets\WindowsFileDrag-Drop\ImageExample.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
     <Compile Include="Assets\Scripts\Core\Singleton.cs" />
     <Compile Include="Assets\Scripts\Shared\Enums.cs" />
@@ -77,11 +79,14 @@
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\VirtualInputs\UIVirtualTouchZone.cs" />
     <Compile Include="Assets\StarterAssets\ThirdPersonController\Scripts\BasicRigidBodyPush.cs" />
     <Compile Include="Assets\StarterAssets\TutorialInfo\Scripts\Readme.cs" />
+    <Compile Include="Assets\Scripts\MariosCameraFollow.cs" />
     <Compile Include="Assets\Scripts\UIManager.cs" />
     <Compile Include="Assets\Scripts\NetworkObjectPool.cs" />
     <Compile Include="Assets\Scripts\PlayersManager.cs" />
     <Compile Include="Assets\Scripts\PlayerWithRaycastControl.cs" />
+    <Compile Include="Assets\WindowsFileDrag-Drop\B83.Win32.cs" />
     <Compile Include="Assets\Scripts\PlayerHud.cs" />
+    <Compile Include="Assets\WindowsFileDrag-Drop\FileDragAndDrop.cs" />
     <Compile Include="Assets\StarterAssets\ThirdPersonController\Scripts\ThirdPersonController.cs" />
     <Compile Include="Assets\Scripts\Shared\RelayJoinData.cs" />
   </ItemGroup>
@@ -377,7 +382,7 @@
       <HintPath>Library\PackageCache\com.unity.visualscripting@1.7.6\Runtime\VisualScripting.Flow\Dependencies\NCalc\Unity.VisualScripting.Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="clipper_library">
-      <HintPath>Library\PackageCache\com.unity.cinemachine@2.8.4\Runtime\ThirdParty\clipper_library.dll</HintPath>
+      <HintPath>Library\PackageCache\com.unity.cinemachine@2.8.6\Runtime\ThirdParty\clipper_library.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json">
       <HintPath>Library\PackageCache\com.unity.nuget.newtonsoft-json@3.0.2\Runtime\Newtonsoft.Json.dll</HintPath>
@@ -892,6 +897,10 @@
     <ProjectReference Include="Unity.Netcode.Editor.csproj">
       <Project>{0ABAC458-1D72-5BB0-CFB4-374B1458A8FC}</Project>
       <Name>Unity.Netcode.Editor</Name>
+    </ProjectReference>
+    <ProjectReference Include="Unity.Services.QoS.csproj">
+      <Project>{606792DD-3FB7-CBD9-B092-8F2016D6D8EE}</Project>
+      <Name>Unity.Services.QoS</Name>
     </ProjectReference>
     <ProjectReference Include="Unity.Mathematics.Editor.csproj">
       <Project>{E08B5E66-11E4-829C-6238-2370E3EDA574}</Project>

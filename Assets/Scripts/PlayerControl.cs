@@ -46,6 +46,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void Awake()
     {
+        //position the player randomly
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
     }
@@ -54,9 +55,10 @@ public class PlayerControl : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-            //position the player randomly
+            
             transform.position = new Vector3(Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y), 0,
                    Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y));
+            MariosCameraFollow.Instance.FollowPlayer(transform.Find("PlayerCameraRoot"));
         }
     }
 

@@ -15,7 +15,7 @@ public class RelayManager : Singleton<RelayManager>
 
 
     [SerializeField]
-    private int maxNumberOfConnections = 10;//unity allows just 10 (beta )
+    private int maxNumberOfConnections = 5;//unity allows just 10 (beta )
 
     public bool IsRelayEnabled => 
         Transport != null && Transport.Protocol == UnityTransport.ProtocolType.RelayUnityTransport;

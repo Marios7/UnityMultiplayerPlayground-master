@@ -3,7 +3,10 @@ using Unity.Netcode.Samples;
 using UnityEngine;
 
 [RequireComponent(typeof(NetworkObject))]
-[RequireComponent(typeof(ClientNetworkTransform))]//when I put the require attribute, it adds a component to the    
+
+[RequireComponent(typeof(ClientNetworkTransform))]
+//this component is gonna do all the magic and synchronize everything 
+//when I put the require attribute, it adds a component to the rigid object in unity 
 public class PlayerControlAuthorative : NetworkBehaviour
 {
     //here the server is not processing the position and rotation
