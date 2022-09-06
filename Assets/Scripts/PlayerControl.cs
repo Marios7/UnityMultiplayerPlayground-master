@@ -5,13 +5,13 @@ using UnityEngine;
 public class PlayerControl : NetworkBehaviour
 {
     [SerializeField]
-    private float walkSpeed = 2.8f;
+    private float walkSpeed = 2.4f;
 
     [SerializeField]
     private float runSpeedOffset = 2.0f;
 
     [SerializeField]
-    private float rotationSpeed = 2.8f;
+    private float rotationSpeed = 2.5f;
 
 
     [SerializeField]
@@ -55,7 +55,6 @@ public class PlayerControl : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-            
             transform.position = new Vector3(Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y), 0,
                    Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y));
             MariosCameraFollow.Instance.FollowPlayer(transform.Find("PlayerCameraRoot"));

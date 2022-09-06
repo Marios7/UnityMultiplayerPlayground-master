@@ -4,91 +4,88 @@ using UnityEditor;
 using System.Linq;
 using B83.Win32;
 using UnityEngine.Video;
-
 using System;
-using System.Windows;
 using TMPro;
+using UnityEngine.UI;
+//using UnityEngine.UIElements;
+using System.IO;
+
 
 public class TVManager : MonoBehaviour
 {
+    public TextMeshProUGUI ApiResponseTextMesh;
     [SerializeField]
-    private TextMeshProUGUI textMesh;
+    private TMP_InputField VideoUrlTextBox;
+    [SerializeField]
+    private TMP_InputField CityFieldTextBox;
 
+    //The TV buttons
     [SerializeField]
-    public string VideoUrl = "";
+    private Button callRestApiButton;
+    [SerializeField]
+    private Button StopButton;
+    [SerializeField]
+    private Button PlayButton;
+    [SerializeField]
+    private Button PauseButton;
+
+    private string url = "";
+    private string defaultVideoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
+    private string cityName = "";
+    //The colors to use when focus
     private Color mouseOverColor = Color.cyan;
-    private Color originalColor;
+    private Color originalButtonColor;
     VideoPlayer videoPlayer = null;
-    private Renderer renderer;
-
+    //the ray is used to check where the mouse points
     Ray ray;
     RaycastHit hit;
+    Renderer TVRenderer;
+
     private void Start()
     {
+        TVRenderer = GetComponent<Renderer>();
         videoPlayer = GetComponent<VideoPlayer>();
-        renderer = GetComponent<Renderer>();
-        originalColor = renderer.material.color;
-    }
-    void Update()
-    {
-        ClientInput();
+
+        callRestApiButton.onClick.AddListener(CallRestApiEvent);
+        StopButton.onClick.AddListener(StopVideo);
+        PauseButton.onClick.AddListener(PauseVideo);
+        PlayButton.onClick.AddListener(PlayVideo);
+        //We can't initiat the color directly with the definition
+        originalButtonColor = TVRenderer.material.color;
     }
 
-    private void ClientInput()
+    private async void CallRestApiEvent()
     {
+        Logger.Instance.LogInfo("Call RestFulService..");
+        cityName = CityFieldTextBox.text;
+        if (String.IsNullOrEmpty(cityName))
+            cityName = RestClient.DamascusCityString;
+        if (videoPlayer != null && videoPlayer.isPlaying)
+            StopVideo();
         try
         {
-            string bufferString = GUIUtility.systemCopyBuffer;
-            if (!String.IsNullOrEmpty(bufferString) && Uri.IsWellFormedUriString(bufferString, UriKind.Absolute))
-            {
-                string url = bufferString;
-                if (isTV())//Check if we are pointing at the tv
-                {
-                    textMesh.text = $"Press 'V' to play the video from the link:\n {url}";
-                }
-                else
-                {
-                    textMesh.text = "";
-                }
-                if (Input.GetKey(KeyCode.V))
-                {
-                    if (isTV())
-                    {
-                        Logger.Instance.LogInfo($"Trying to play clip from: {url}");
-                        if (videoPlayer == null)
-                        {
-                            videoPlayer = GetComponent<VideoPlayer>();
-                            videoPlayer.url = url;
-                            videoPlayer.Play();
-                        }
-                    }
-                    //PlayViedoWhenTheObjectIsTV(url);
-                }
-            }
+            WeatherInfo s = await RestClient.sendRequestAsync(cityName);
+            var MessageToShow = $"City: {s.name}\n" +
+                                $"City Id: {s.id}\n" +
+                                $"Weather: {s.weather.FirstOrDefault().main}d";
+            ApiResponseTextMesh.text = MessageToShow;
         }
         catch (Exception ex)
         {
-            Logger.Instance.LogError($"Error! {ex.Message}");
+            Logger.Instance.LogError($"Exception: {ex.Message}");
         }
     }
-    void OnMouseEnter()
-    {
-        renderer.material.color = mouseOverColor;
-    }
 
-    void OnMouseExit()
-    {
-        renderer.material.color = originalColor;
-    }
 
     void OnEnable()
     {
+        //For drag and drop
         // must be installed on the main thread to get the right thread id.
         UnityDragAndDropHook.InstallHook();
         UnityDragAndDropHook.OnDroppedFiles += OnFiles;
     }
     void OnDisable()
-    {
+    {   //Drag and drop
         UnityDragAndDropHook.UninstallHook();
     }
 
@@ -113,17 +110,58 @@ public class TVManager : MonoBehaviour
     {
         ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         if (Physics.Raycast(ray, out hit) && hit.collider.name == "SteeviTheTV")
+        {
+            TVRenderer.material.color = mouseOverColor;
             return true;
+        }
+        TVRenderer.material.color = originalButtonColor;
         return false;
     }
     private void PlayViedoWhenTheObjectIsTV(string url)
     {
         if (isTV())
         {
-            Logger.Instance.LogInfo($"Trying to play clip from: {url}");
+            Logger.Instance.LogInfo($"Video Url is updated: {url}");
             videoPlayer.url = url;
-            videoPlayer.Play();
         }
+    }
+    public void StopVideo()
+    {
+        Logger.Instance.LogInfo("Stopping Video..");
+
+        if (videoPlayer != null)
+            videoPlayer.Stop();
+    }
+    public void PlayVideo()
+    {
+        Logger.Instance.LogInfo("Playing Video...");
+        ApiResponseTextMesh.text = "";
+        ApiResponseTextMesh.text = "";
+        if (videoPlayer != null && (!videoPlayer.isPlaying || videoPlayer.isPaused))
+        {
+            url = VideoUrlTextBox.text;
+            if (String.IsNullOrEmpty(url))
+                url = defaultVideoUrl;
+            {
+                try
+                {
+                    /*_ = Path.GetFullPath(url);*///in order to check if the path is valid, if it's not, it will throw an Exception
+                    videoPlayer.url = url;
+                }
+                catch (Exception ex)
+                {
+                    Logger.Instance.LogError($"Error! {ex.Message}");
+                    return;
+                }
+            }
+        }
+        videoPlayer.Play();
+    }
+    public void PauseVideo()
+    {
+        Logger.Instance.LogInfo("Pause Video Button clicked");
+        if (videoPlayer != null && (videoPlayer.isPlaying))
+            videoPlayer.Pause();
 
     }
 }
