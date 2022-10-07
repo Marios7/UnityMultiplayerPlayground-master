@@ -5,13 +5,13 @@ using UnityEngine;
 public class PlayerControl : NetworkBehaviour
 {
     [SerializeField]
-    private float walkSpeed = 2.8f;
+    private float walkSpeed = 2.4f;
 
     [SerializeField]
     private float runSpeedOffset = 2.0f;
 
     [SerializeField]
-    private float rotationSpeed = 3.5f;
+    private float rotationSpeed = 2.5f;
 
 
     [SerializeField]
@@ -46,6 +46,7 @@ public class PlayerControl : NetworkBehaviour
 
     private void Awake()
     {
+        //position the player randomly
         characterController = GetComponent<CharacterController>();
         animator = GetComponent<Animator>();
     }
@@ -54,21 +55,22 @@ public class PlayerControl : NetworkBehaviour
     {
         if (IsClient && IsOwner)
         {
-            //position the player randomly
             transform.position = new Vector3(Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y), 0,
                    Random.Range(defaultInitialPositionOnPlane.x, defaultInitialPositionOnPlane.y));
+            MariosCameraFollow.Instance.FollowPlayer(transform.Find("PlayerCameraRoot"));
         }
     }
 
     void Update()
     {
+        //sadaysuh
         if (IsClient && IsOwner) //If we do not add the (IsOwner) check, we could controll other players and it would make no sense
         {
             ClientInput();
         }
-
         ClientMoveAndRotate();
         ClientVisuals();
+        //RestClient.sendRequest();
     }
 
     private void ClientMoveAndRotate()

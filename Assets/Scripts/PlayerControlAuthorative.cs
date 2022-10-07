@@ -3,9 +3,16 @@ using Unity.Netcode.Samples;
 using UnityEngine;
 
 [RequireComponent(typeof(NetworkObject))]
+
 [RequireComponent(typeof(ClientNetworkTransform))]
+//this component is gonna do all the magic and synchronize everything 
+//when I put the require attribute, it adds a component to the rigid object in unity 
 public class PlayerControlAuthorative : NetworkBehaviour
 {
+    //here the server is not processing the position and rotation
+    //the client is synchronizing these information to the other clients
+    //the server is still responsible of the state
+
     [SerializeField]
     private float walkSpeed = 3.5f;
 
@@ -73,7 +80,7 @@ public class PlayerControlAuthorative : NetworkBehaviour
         Vector3 direction = transform.TransformDirection(Vector3.forward);
         float forwardInput = Input.GetAxis("Vertical");
         Vector3 inputPosition = direction * forwardInput;
-
+         
         // change animation states
         if (forwardInput == 0)
             UpdatePlayerStateServerRpc(PlayerState.Idle);

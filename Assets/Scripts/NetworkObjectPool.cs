@@ -7,6 +7,11 @@ using UnityEngine;
 using UnityEngine.Assertions;
 
 
+
+/// <summary>
+/// Network object pool basically allows to instantiate objects before the game start, 
+/// so we don't get a performance descrease when we have many objects.
+/// </summary>
 public class NetworkObjectPool : Singleton<NetworkObjectPool>
 {
     [SerializeField]
