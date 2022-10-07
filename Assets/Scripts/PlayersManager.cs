@@ -5,9 +5,8 @@ using Unity.Netcode;
 //and any object that will have a network variable, have to have a network Object so that the information can be sinchronized
 public class PlayersManager : NetworkSingleton<PlayersManager>
 {
-    
-    NetworkVariable<int> playersInGame = new NetworkVariable<int>();
 
+    NetworkVariable<int> playersInGame = new NetworkVariable<int>();
     public int PlayersInGame
     {
         get
@@ -20,14 +19,21 @@ public class PlayersManager : NetworkSingleton<PlayersManager>
     {
         NetworkManager.Singleton.OnClientConnectedCallback += (id) =>
         {
-            if(IsServer)
+            if (IsServer || IsHost)
+            {
                 playersInGame.Value++;
+                Logger.Instance.LogInfo($"playerInGame: {playersInGame.Value}");
+            }
         };
 
         NetworkManager.Singleton.OnClientDisconnectCallback += (id) =>
         {
-            if(IsServer)
+            if (IsServer || IsHost)
+            {
                 playersInGame.Value--;
+            }
         };
+
     }
+    
 }

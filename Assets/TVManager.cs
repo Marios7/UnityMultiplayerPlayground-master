@@ -1,19 +1,25 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEditor;
 using System.Linq;
 using B83.Win32;
 using UnityEngine.Video;
+
+using UnityEngine.Networking;
 using System;
+
 using TMPro;
 using UnityEngine.UI;
 //using UnityEngine.UIElements;
-using System.IO;
+using Unity.Netcode;
+using System.Data;
+using UnityEditor;
 
-
-public class TVManager : MonoBehaviour
+public class TVManager : NetworkBehaviour
 {
-    public TextMeshProUGUI ApiResponseTextMesh;
+    [SerializeField]
+    private TextMeshProUGUI ApiResponseTextMesh;
+
+    //public TextMeshProUGUI ApiResponseTextMesh;
     [SerializeField]
     private TMP_InputField VideoUrlTextBox;
     [SerializeField]
@@ -29,53 +35,77 @@ public class TVManager : MonoBehaviour
     [SerializeField]
     private Button PauseButton;
 
-    private string url = "";
+    //Default Variables
     private string defaultVideoUrl = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4";
-    private string cityName = "";
     //The colors to use when focus
     private Color mouseOverColor = Color.cyan;
     private Color originalButtonColor;
     VideoPlayer videoPlayer = null;
+
     //the ray is used to check where the mouse points
+    //Notice that for TV We did not associate the gameObjectChangeColor, that is because, in the drag and drop feature, we can drop just on the TV Obeject so we need to know if the mouse is pointing on the TV and that's what isTV() does.
     Ray ray;
     RaycastHit hit;
     Renderer TVRenderer;
 
+    public void Update()
+    {
+        //if (IsClient)//We need to update it just on the clients beacuse in the server it's being changed in the first place so we don't have to update it there
+        ApiResponseTextMesh.text = RestClient.Instance.networkApiMessage.Value;
+    }
     private void Start()
     {
         TVRenderer = GetComponent<Renderer>();
         videoPlayer = GetComponent<VideoPlayer>();
 
+        //Attach the Events to the buttons
         callRestApiButton.onClick.AddListener(CallRestApiEvent);
-        StopButton.onClick.AddListener(StopVideo);
-        PauseButton.onClick.AddListener(PauseVideo);
-        PlayButton.onClick.AddListener(PlayVideo);
+        StopButton.onClick.AddListener(StopVideoEvent);
+        PauseButton.onClick.AddListener(PauseVideoEvent);
+        PlayButton.onClick.AddListener(PlayVideoEvent);
+
         //We can't initiat the color directly with the definition
         originalButtonColor = TVRenderer.material.color;
     }
-
-    private async void CallRestApiEvent()
+    //Network variables can be changed only from the server
+    //In case the client press the button to call the API then we need to Invoked as if the server did call, in other words; tell the server to invoke the event and change the value of the network variable.
+    //Once the value of the NetworkVariable is changed by the server, it will be syncronized across the clients as if the client call the API.
+    public void CallRestApiEvent()
     {
+        if (IsServer)
+            CallRestApi();
+        else//if it's the client 
+            CallRestApIServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership =false)]
+    private void CallRestApIServerRpc()
+    {
+        CallRestApi();
+    }
+
+    private async void CallRestApi()
+    {
+        //if (IsServer)
+        //{
         Logger.Instance.LogInfo("Call RestFulService..");
-        cityName = CityFieldTextBox.text;
+        var cityName = CityFieldTextBox.text;
         if (String.IsNullOrEmpty(cityName))
             cityName = RestClient.DamascusCityString;
         if (videoPlayer != null && videoPlayer.isPlaying)
-            StopVideo();
+            StopVideoEvent();
         try
         {
-            WeatherInfo s = await RestClient.sendRequestAsync(cityName);
-            var MessageToShow = $"City: {s.name}\n" +
-                                $"City Id: {s.id}\n" +
-                                $"Weather: {s.weather.FirstOrDefault().main}d";
-            ApiResponseTextMesh.text = MessageToShow;
+            //Calling the API will set the NetworkVariable "APIMessage" which will update the api Message showed on the Tv
+            _ = await RestClient.Instance.sendRequestAsync(cityName);
+            //ApiResponseTextMesh.text = RestClient.networkApiMessage.Value;
         }
         catch (Exception ex)
         {
             Logger.Instance.LogError($"Exception: {ex.Message}");
         }
+        //}
     }
-
 
     void OnEnable()
     {
@@ -117,6 +147,7 @@ public class TVManager : MonoBehaviour
         TVRenderer.material.color = originalButtonColor;
         return false;
     }
+    
     private void PlayViedoWhenTheObjectIsTV(string url)
     {
         if (isTV())
@@ -125,21 +156,41 @@ public class TVManager : MonoBehaviour
             videoPlayer.url = url;
         }
     }
-    public void StopVideo()
-    {
-        Logger.Instance.LogInfo("Stopping Video..");
 
-        if (videoPlayer != null)
-            videoPlayer.Stop();
+
+    /// <summary>
+    /// If the client is caling this method then we want all the clients, server included to run the video
+    /// BUT the only Device that can talk to all the clients is the SERVER, so we use ServerRpc to call the server and from there we use ClientRpc to call all the clients.
+    /// This methodology will be used in Play, Pause and Stop functions.
+    /// </summary>
+    #region Play Video
+    public void PlayVideoEvent()
+    {
+        if (IsServer)
+        {
+           PlayVideoClientRpc();
+        }
+        else
+        {
+            PlayVideoServerRpc();
+        }
     }
-    public void PlayVideo()
+    
+    [ServerRpc(RequireOwnership =false)]//The requireOwner=false is neccessary otherwse it will require owenship and it will not be able to call it
+    private void PlayVideoServerRpc()
+    {
+        PlayVideoClientRpc();
+    }
+    [ClientRpc]
+    private void PlayVideoClientRpc()
     {
         Logger.Instance.LogInfo("Playing Video...");
-        ApiResponseTextMesh.text = "";
-        ApiResponseTextMesh.text = "";
+        //Clean the board in case there is a Message;
+        if(IsServer)
+            RestClient.Instance.ClearMessage();
         if (videoPlayer != null && (!videoPlayer.isPlaying || videoPlayer.isPaused))
         {
-            url = VideoUrlTextBox.text;
+            var url = VideoUrlTextBox.text;
             if (String.IsNullOrEmpty(url))
                 url = defaultVideoUrl;
             {
@@ -157,12 +208,58 @@ public class TVManager : MonoBehaviour
         }
         videoPlayer.Play();
     }
-    public void PauseVideo()
+    #endregion
+
+    #region Pause Video
+    private void PauseVideoEvent()
+    {
+        if (IsServer)//if it's the server then just play it with ClientRpc
+        {
+            PauseVideoClientRpc();
+        }
+        else//if it's client then trigger the server to play the video with ServerRpc
+        {
+            PauseVideoServerRpc();
+        }
+    }
+
+
+    [ServerRpc(RequireOwnership = false)]
+    private void PauseVideoServerRpc() 
+    {
+        PauseVideoClientRpc();
+    }
+    [ClientRpc]
+    public void PauseVideoClientRpc()
     {
         Logger.Instance.LogInfo("Pause Video Button clicked");
         if (videoPlayer != null && (videoPlayer.isPlaying))
             videoPlayer.Pause();
 
     }
+    #endregion
+
+    #region Stop Video
+    private void StopVideoEvent()
+    {
+        if (IsServer)
+            StopVideoClientRpc();
+        else
+            StopVideoServerRpc();
+    }
+
+    [ServerRpc(RequireOwnership =false)]
+    private void StopVideoServerRpc()
+    {
+        StopVideoClientRpc();
+    }
+    [ClientRpc]
+    private void StopVideoClientRpc()
+    {
+        Logger.Instance.LogInfo("Stopping Video");
+        if (videoPlayer != null)
+            videoPlayer.Stop();
+    }
+    #endregion
 }
 

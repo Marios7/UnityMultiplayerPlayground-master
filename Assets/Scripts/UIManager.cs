@@ -59,23 +59,6 @@ public class UIManager : Singleton<UIManager>
     {
         try
         {
-            //CallRestButton?.onClick.AddListener(async () =>
-            //{
-            //    Logger.Instance.LogInfo("Call RestFulService..");
-            //    try
-            //    {
-            //        WeatherInfo s = await RestClient.sendRequestAsync("Damascus");
-            //        Logger.Instance.LogInfo($"RestFulService says:\nname: {s.name}\nweather: {s.weather[0].main}\nid: {s.id}");
-
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        Logger.Instance.LogInfo($"Exception: {ex.Message}");
-            //    }
-            //});
-
-            //Network Manager is from .NetCode
-            // START SERVER
             startServerButton?.onClick.AddListener(() =>
             {
                 if (NetworkManager.Singleton.StartServer())

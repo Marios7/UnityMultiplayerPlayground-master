@@ -1,64 +1,81 @@
+using DilmerGames.Core.Singletons;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Unity.Netcode;
 using UnityEngine;
 
-[Serializable]
-public class Weather
+[RequireComponent(typeof(NetworkBehaviour))]
+public class RestClient : NetworkSingleton<RestClient>
 {
-    public int id;
-    public string main;
-}
-[Serializable]
-public class WeatherInfo
-{
-    public int id;
-    public string name;
-    public List<Weather> weather;
-}
-
-public class RestClient : MonoBehaviour
-{
-    public static HttpClient client = new HttpClient();
-
+    //Private Attributes
     private const string API_KEY = "173de5ebbee2074cbf8be66d229287f5";
     private const string url = "http://api.openweathermap.org/data/2.5/weather?q=";
-    public static string CityId = "170654";
+
+    //Private Attributes
+    public static string DamascusCityId = "170654";
     public static string DamascusCityString = "Damascus";
-    //public static string WeatherURL = string.Format("http://api.openweathermap.org/data/2.5/weather?q={0}&APPID={1}", DamascusCityString, API_KEY);
 
-    //private static void InitializeClient(string cityName)
-    //{
-    //    //client = new HttpClient();
-    //    client.BaseAddress = new Uri(localUrl);
-    //    System.Net.ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
-    //    client.DefaultRequestHeaders.Accept.Clear();
-    //    // Add an Accept header for JSON format.
-    //    client.DefaultRequestHeaders.Accept.Add(
-    //        new System.Net.Http.Headers.MediaTypeWithQualityHeaderValue("application/json"));
+    //Network variables can be changed only from the server
+    //This variable is the one responsabile of synchronizing the Api Response between the Server and the Clients (Note that the class inherits NetworkBehaviour and not MonoBehaviour).
+    public NetworkVariable<NetworkString> networkApiMessage = new NetworkVariable<NetworkString>();
 
-    //}
-    //public static string sendRequest()
-    //{
-    //    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(localUrl);
-    //    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-    //    StreamReader reader = new StreamReader(response.GetResponseStream());
-    //    string jsonResponse = reader.ReadToEnd();
-    //    return jsonResponse;
-    //}
-    public static async Task<WeatherInfo> sendRequestAsync(string cityName)
+    public string Message
     {
-        string WeatherURL = string.Format("{0}{1}&APPID={2}", url,cityName, API_KEY);
+        get
+        {
+            return networkApiMessage.Value;
+        }
+    }
+
+    public void Start()
+    {
+        if (IsServer)
+        {
+            NetworkManager.Singleton.OnClientConnectedCallback += (id) =>
+            {
+                networkApiMessage.Value = "Network Variable is Initiated";
+            };
+        }
+    }
+    public string sendRequest(string cityName)
+    {
+        //Initialize each time before the call
+        ClearMessage();
+        string WeatherURL = string.Format("{0}{1}&APPID={2}", url, cityName, API_KEY);
+        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(WeatherURL);
+        HttpWebResponse response = (HttpWebResponse)(request.GetResponse());
+        StreamReader reader = new StreamReader(response.GetResponseStream());
+        string jsonResponse = reader.ReadToEnd();
+        WeatherInfo info = JsonUtility.FromJson<WeatherInfo>(jsonResponse);
+        networkApiMessage.Value = "The weather in " + info.name + " is " + info.weather.FirstOrDefault().main;
+        Logger.Instance.LogInfo($"NetworkVariable.Value: {Message}");
+        //Logger.Instance.LogInfo($"{info.weather.FirstOrDefault().main}");
+        return Message;
+    }
+    public async Task<WeatherInfo> sendRequestAsync(string cityName)
+    {
+        //Initialize each time before the call
+        ClearMessage();
+        string WeatherURL = string.Format("{0}{1}&APPID={2}", url, cityName, API_KEY);
         HttpWebRequest request = (HttpWebRequest)WebRequest.Create(WeatherURL);
         HttpWebResponse response = (HttpWebResponse)(await request.GetResponseAsync());
         StreamReader reader = new StreamReader(response.GetResponseStream());
         string jsonResponse = reader.ReadToEnd();
-        //Here I shoud Serialize 
         WeatherInfo info = JsonUtility.FromJson<WeatherInfo>(jsonResponse);
+        //Formatting the string with $ or with string.Format results in exception 
+        networkApiMessage.Value = "The weather in \n" + info.name + " is " + info.weather.FirstOrDefault().main;
+        Logger.Instance.LogInfo($"NetworkVariable.Value: {networkApiMessage.Value}");
+        //Logger.Instance.LogInfo($"Weather: {info.weather.FirstOrDefault().main}");
         return info;
     }
 
+    public void ClearMessage()
+    {
+        networkApiMessage.Value = "";
+    }
 }
