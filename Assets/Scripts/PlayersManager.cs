@@ -17,12 +17,21 @@ public class PlayersManager : NetworkSingleton<PlayersManager>
 
     void Start()
     {
+        NetworkManager.Singleton.OnServerStarted += () =>
+        {
+            if (IsHost)
+            { 
+                playersInGame.Value++;
+                Logger.Instance.LogInfo($"Host connected!");
+            }
+
+        };
         NetworkManager.Singleton.OnClientConnectedCallback += (id) =>
         {
-            if (IsServer || IsHost)
+            if (IsServer)
             {
                 playersInGame.Value++;
-                Logger.Instance.LogInfo($"playerInGame: {playersInGame.Value}");
+                Logger.Instance.LogInfo($"Client {id} connected!");
             }
         };
 
@@ -31,6 +40,7 @@ public class PlayersManager : NetworkSingleton<PlayersManager>
             if (IsServer || IsHost)
             {
                 playersInGame.Value--;
+                Logger.Instance.LogInfo($"Client {id} disconnected!");
             }
         };
 
