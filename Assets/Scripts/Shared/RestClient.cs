@@ -8,6 +8,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 [RequireComponent(typeof(NetworkBehaviour))]
 public class RestClient : NetworkSingleton<RestClient>
@@ -19,6 +20,7 @@ public class RestClient : NetworkSingleton<RestClient>
     //Private Attributes
     public static string DamascusCityId = "170654";
     public static string DamascusCityString = "Damascus";
+    public static NetworkVariable<NetworkString> CityName = new NetworkVariable<NetworkString>();
 
     //Network variables can be changed only from the server
     //This variable is the one responsabile of synchronizing the Api Response between the Server and the Clients (Note that the class inherits NetworkBehaviour and not MonoBehaviour).
@@ -52,6 +54,7 @@ public class RestClient : NetworkSingleton<RestClient>
         StreamReader reader = new StreamReader(response.GetResponseStream());
         string jsonResponse = reader.ReadToEnd();
         WeatherInfo info = JsonUtility.FromJson<WeatherInfo>(jsonResponse);
+
         networkApiMessage.Value = "The weather in " + info.name + " is " + info.weather.FirstOrDefault().main;
         Logger.Instance.LogInfo($"NetworkVariable.Value: {Message}");
         //Logger.Instance.LogInfo($"{info.weather.FirstOrDefault().main}");

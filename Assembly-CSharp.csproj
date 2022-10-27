@@ -72,7 +72,6 @@
     <Compile Include="Assets\Scripts\PlayerBallControl.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\CanvasInputs\UICanvasControllerInput.cs" />
     <Compile Include="Assets\Scripts\PlayerControl.cs" />
-    <Compile Include="Assets\WindowsFileDrag-Drop\ImageExample.cs" />
     <Compile Include="Assets\StarterAssets\Mobile\Scripts\Utilities\MobileDisableAutoSwitchControls.cs" />
     <Compile Include="Assets\DynamicBone\Demo\DynamicBoneDemo1.cs" />
     <Compile Include="Assets\Scripts\Shared\Weather.cs" />
@@ -90,10 +89,8 @@
     <Compile Include="Assets\DynamicBone\Scripts\DynamicBone.cs" />
     <Compile Include="Assets\Scripts\PlayersManager.cs" />
     <Compile Include="Assets\Scripts\PlayerWithRaycastControl.cs" />
-    <Compile Include="Assets\WindowsFileDrag-Drop\B83.Win32.cs" />
     <Compile Include="Assets\DynamicBone\Scripts\DynamicBoneCollider.cs" />
     <Compile Include="Assets\Scripts\PlayerHud.cs" />
-    <Compile Include="Assets\WindowsFileDrag-Drop\FileDragAndDrop.cs" />
     <Compile Include="Assets\StarterAssets\ThirdPersonController\Scripts\ThirdPersonController.cs" />
     <Compile Include="Assets\DynamicBone\Scripts\DynamicBoneColliderBase.cs" />
     <Compile Include="Assets\Scripts\Shared\RelayJoinData.cs" />
