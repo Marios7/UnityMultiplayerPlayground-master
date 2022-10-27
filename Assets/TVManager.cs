@@ -95,8 +95,8 @@ public class TVManager : NetworkBehaviour
         {
             //Calling the API will set the NetworkVariable "APIMessage" which will update the api Message showed on the Tv
             //The Response of the API is shared using NetworkVarible.
-            //The city name is sent from the client to the server when the client change the city name, and ask the server to call the api with for this city.
-            //When the server change the city name, it shares the whole response.
+            //The city name is sent from the client to the server when the client change the city name, and ask the server to call the api for this city.
+            //When the server changes the city name, it shares the whole response.
             _ = await RestClient.Instance.sendRequestAsync(cityName);
         }
         catch (Exception ex)
@@ -203,8 +203,8 @@ public class TVManager : NetworkBehaviour
                     return;
                 }
             }
+            videoPlayer.Play();
         }
-        videoPlayer.Play();
     }
     #endregion
 

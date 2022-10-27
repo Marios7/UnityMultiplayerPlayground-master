@@ -54,6 +54,7 @@ public class RestClient : NetworkSingleton<RestClient>
         StreamReader reader = new StreamReader(response.GetResponseStream());
         string jsonResponse = reader.ReadToEnd();
         WeatherInfo info = JsonUtility.FromJson<WeatherInfo>(jsonResponse);
+
         networkApiMessage.Value = "The weather in " + info.name + " is " + info.weather.FirstOrDefault().main;
         Logger.Instance.LogInfo($"NetworkVariable.Value: {Message}");
         //Logger.Instance.LogInfo($"{info.weather.FirstOrDefault().main}");
